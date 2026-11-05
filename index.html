@@ -30,8 +30,13 @@
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-padding-top:72px;scroll-padding-bottom:104px}
 html,body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.4;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+html.full,html.full body{background:var(--green)}
+html.full body{padding-bottom:0}
+[data-theme=dark].full,[data-theme=dark].full body{background:#0A3D24}
+.ob,.tut{min-height:100vh;min-height:100dvh}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 input,textarea{font:inherit;font-size:17px;color:var(--text);-webkit-text-fill-color:var(--text);caret-color:var(--green);-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
 input::placeholder,textarea::placeholder{color:var(--ink-3);-webkit-text-fill-color:var(--ink-3);opacity:1}
@@ -218,6 +223,11 @@ textarea{width:100%;min-height:96px;border:2px solid var(--line);border-radius:1
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
 .tbl td{padding:10px 0;border-bottom:1px solid var(--line)}
 .tbl td:last-child{text-align:right;font-family:var(--display);font-weight:700;font-size:19px}
+.barr{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.barr .bt{flex:1;min-width:0}.barr .bt b{display:block;font-weight:600;line-height:1.25}.barr .bt small{color:var(--ink-3);font-size:13.5px}
+.barr.at .bt b{color:var(--ink-2)}
+.bbtn{flex:none;display:inline-flex;align-items:center;gap:5px;border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 12px;font-weight:700;font-size:14px;min-height:40px}
+.bbtn.on{background:var(--green-l);border-color:transparent;color:var(--green-d)}
 .charla{background:var(--yellow-l);border-radius:16px;padding:16px}
 .charla ol{padding-left:20px;display:grid;gap:10px;margin-top:10px}
 .charla li b{display:block;font-family:var(--display);font-size:16px;letter-spacing:.5px;text-transform:uppercase;color:var(--y-tx)}
@@ -232,7 +242,7 @@ textarea{width:100%;min-height:96px;border:2px solid var(--line);border-radius:1
 .ob .opts svg{width:30px;height:30px;flex:none}
 .ob .note{background:rgba(0,0,0,.18);border-radius:14px;padding:14px;font-size:15px}
 
-.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:50;max-width:90vw;text-align:center}
+.toast{pointer-events:none;position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;z-index:50;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .fade{animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -297,8 +307,6 @@ const CORTO = {
 // Datos del Anexo B usados como "por qué" (sin inventar cifras)
 const DATO = {
   "P-03":"El último año hubo 37 casi accidentes en bodega por circulación peatonal.",
-  "P-01":"El último año hubo 22 eventos en planta por omitir el bloqueo de máquinas o los elementos de protección.",
-  "P-02":"El último año hubo 22 eventos en planta por omitir el bloqueo de máquinas o los elementos de protección.",
   "P-11":"El último año hubo 6 casos de información de rutas compartida por mensajería."
 };
 
@@ -391,9 +399,14 @@ const PREGUNTAS = [
  {id:"q8",p:"P-13",t:"Suena la alarma de evacuación mientras acomodas una estiba. ¿Qué haces?",o:["Termino de acomodarla y salgo","Suspendo la tarea y sigo la ruta señalizada","Salgo por el camino que conozco mejor"],c:1},
  {id:"q9",p:"P-13",t:"Llegaste al punto de encuentro durante una evacuación. ¿Qué sigue?",o:["Me voy a casa","Me reporto con mi líder","Vuelvo por mis cosas"],c:1},
  {id:"q10",p:"P-13",t:"Durante una evacuación, ¿se pueden usar los ascensores?",o:["Sí, si funcionan","No, no se usan ascensores","Solo si hay muchas escaleras"],c:1},
- {id:"q11",p:"P-10",t:"Estás cargando un vehículo en el muelle. ¿Hasta dónde puede llegar la carga?",o:["Hasta donde quepa","Sin superar la altura marcada en el vehículo y sin bloquear la visibilidad","Hasta el techo, si va bien amarrada"],c:1},
+ {id:"q11",p:"P-10",t:"Estás cargando un vehículo en el muelle. ¿Hasta dónde puede llegar la carga?",o:["Hasta donde quepa","Sin superar la altura marcada en el vehículo y sin bloquear la visibilidad","Hasta que el conductor me diga que ya es suficiente"],c:1},
  {id:"q12",p:"P-11",t:"Un conocido te escribe para preguntar a qué hora sale mañana el despacho. ¿Qué haces?",o:["Le digo, es solo la hora","No comparto rutas, horarios ni contenido de los despachos con terceros","Le digo, pero le pido que no lo comparta"],c:1},
- {id:"q13",p:"P-04",t:"Ves a un contratista caminando solo por un área de producción. ¿Qué dice la pauta?",o:["Está bien si ya firmó la entrada","Debe llevar la escarapela visible y estar acompañado por un colaborador","Solo necesita llevar la escarapela"],c:1}
+ {id:"q13",p:"P-04",t:"Ves a un contratista caminando solo por un área de producción. ¿Qué dice la pauta?",o:["Está bien si ya firmó la entrada","Debe llevar la escarapela visible y estar acompañado por un colaborador","Solo necesita llevar la escarapela"],c:1},
+ // q14–q17: propuestas por Gemini (prompt 3), revisadas y seleccionadas por Sami; q15 con una opción corregida
+ {id:"q14",p:"P-01",t:"Estás en una zona demarcada en amarillo y hace calor. ¿Qué elemento de protección puedes quitarte?",o:["Las gafas, para ver mejor","Ninguno: todos son obligatorios en la zona amarilla","La protección auditiva, solo un momento"],c:1},
+ {id:"q15",p:"P-04",t:"Llega un proveedor nuevo a las áreas de producción. ¿Cómo debe ingresar?",o:["Solo con registrar su nombre en la entrada","Con la escarapela visible y acompañado por un colaborador","Solo con la escarapela, si ya conoce el área"],c:1},
+ {id:"q16",p:"P-04",t:"Un contratista necesita entrar a producción a revisar un equipo. ¿Quién debe estar con él?",o:["Nadie, si lleva la escarapela puesta","Un colaborador de la Empresa","Otro contratista que ya conozca el área"],c:1},
+ {id:"q17",p:"P-10",t:"Estás cargando mercancía en el vehículo. ¿Qué debes cuidar de la carga?",o:["Que no supere la altura marcada y no bloquee la visibilidad","Que vaya bien amarrada, aunque sobrepase la cabina","Que tape toda la parte trasera para que no se caiga"],c:0}
 ];
 
 /* ---------- 5. Escenarios "elige tu camino" (basados en incidentes del Anexo B) ---------- */
@@ -465,7 +478,7 @@ const SITUACIONES = [
 
 /* ---------- 7. Charlas de 5 minutos para el líder (generadas con IA, verificadas) ---------- */
 const CHARLAS = {
- "P-03":{ caso:"El último año hubo 37 casi accidentes en bodega por circulación peatonal: es el riesgo más frecuente del área.",
+ "P-03":{ caso:"El último año hubo 37 casi accidentes en bodega por circulación peatonal.",
    preg:"¿En qué punto de la bodega les dan más ganas de tomar el atajo? ¿Por qué?",
    cierre:"Si el pasillo verde está bloqueado, no se cruza: se reporta." },
  "P-12":{ caso:"Un casi accidente es un aviso gratis: no hubo heridos, pero sí hubo riesgo.",
@@ -474,7 +487,7 @@ const CHARLAS = {
  "P-11":{ caso:"El último año hubo 6 casos de información de rutas compartida por mensajería.",
    preg:"¿Quiénes les han preguntado por un despacho? ¿Qué les respondieron?",
    cierre:"Rutas, horarios y contenido de los despachos no se comparten con terceros ni en redes." },
- "P-02":{ caso:"El último año hubo 22 eventos en planta por omitir el bloqueo de máquinas o los elementos de protección.",
+ "P-02":{ caso:"",
    preg:"¿Qué hace que alguien intervenga una máquina sin bloquearla?",
    cierre:"Detenida, candado y tarjeta personal. Sin eso, nadie la interviene." }
 };
@@ -499,24 +512,28 @@ const SEED = {
 
 /* ---------- 9. Estado local + registro de eventos ---------- */
 const LS="pv_state_v1";
-let S = {tema:"auto",turno:null, srs:{}, events:[], racha:0, ultimoReto:null, pend:[]};
+let S = {atendidas:{},tema:"auto",turno:null, srs:{}, events:[], racha:0, ultimoReto:null, pend:[]};
 try{ const x=JSON.parse(localStorage.getItem(LS)); if(x) S=Object.assign(S,x) }catch(e){}
+if(!S.atendidas) S.atendidas={};
 function save(){ try{ localStorage.setItem(LS,JSON.stringify(S)) }catch(e){} }
 function logEvent(e){
   e.ts=Date.now(); e.turno=S.turno||"dia"; e.area="bodega";
   S.events.push(e); save();
   if(CONFIG.ENDPOINT){ S.pend.push(e); save(); flush() }
 }
-let enviando=false;
+let enviando=false, volvio=false;
 function flush(){
   if(enviando||!CONFIG.ENDPOINT||!S.pend.length||!navigator.onLine) return;
   if(S.pend.length>500) S.pend=S.pend.slice(-500);
   enviando=true; const lote=S.pend.slice(0,100);
   fetch(CONFIG.ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(lote)})
-    .then(()=>{ S.pend=S.pend.slice(lote.length); save(); enviando=false; if(S.pend.length) setTimeout(flush,500) })
+    .then(()=>{ S.pend=S.pend.slice(lote.length); save(); enviando=false;
+      if(volvio){ volvio=false; toast(`Volvió la señal: se enviaron ${lote.length} registro${lote.length>1?"s":""}`); const b=$("#pendbar"); if(b) b.remove() }
+      if(S.pend.length) setTimeout(flush,500) })
     .catch(()=>{ enviando=false });
 }
-addEventListener("online",flush);
+addEventListener("online",()=>{ volvio=S.pend.length>0; flush() });
+addEventListener("offline",()=>{ if(location.hash===""||location.hash==="#inicio") render() });
 
 /* ---------- 10. Utilidades ---------- */
 function oscuro(){ return S.tema==="oscuro" || (S.tema!=="claro" && S.turno==="noche") }
@@ -599,6 +616,7 @@ function arte(tipo){
 
 /* ---------- 13. Vistas ---------- */
 function shell(html,tab,keep){
+  pantallaCompleta(false);
   app.innerHTML = `
   <header class="top"><div class="wrap">
     <a class="brand" href="#inicio"><span class="mark">${I.logo}</span>Pasillo Verde</a>
@@ -619,7 +637,9 @@ function shell(html,tab,keep){
   $("#tbtn").onclick=()=>{ cambiarTema(oscuro()?"claro":"oscuro"); };
 }
 
+function pantallaCompleta(on){ document.documentElement.classList.toggle("full",!!on) }
 function vOnboarding(){
+  pantallaCompleta(true);
   let t=S.turno;
   app.innerHTML=`<div class="ob"><div class="wrap">
     <div class="brand" style="color:#fff"><span class="mark">${I.logo}</span>Pasillo Verde</div>
@@ -644,6 +664,7 @@ function vInicio(){
   <section>
     <p class="eyebrow">Auxiliar de bodega · ${S.turno==="noche"?"noche":"día"}</p>
     <h1 class="mt8">¿Qué necesitas<br>ahora mismo?</h1>
+    ${(CONFIG.ENDPOINT&&(S.pend.length||!navigator.onLine))?`<div id="pendbar" class="sim-banner mt12" style="background:#2B3137">${I.info.replace('<svg','<svg width="18" height="18" style="flex:none;color:var(--yellow)"')}<span>${navigator.onLine?"":"Sin señal. "}${S.pend.length?`${S.pend.length} registro${S.pend.length>1?"s":""} esperando conexión · se envían solos.`:"Tus respuestas se guardan y se envían cuando vuelva la conexión."}</span></div>`:""}
   </section>
   <a class="hero" href="#reto">
     <span class="tag">${I.bolt.replace('<svg','<svg width="16" height="16"')} Reto de hoy · 60 s</span>
@@ -783,6 +804,7 @@ const TUTORIAL=[
  {ic:"alert", tit:"Reporta en 3 toques", txt:"Un casi accidente, algo sospechoso o algo que no te dejó cumplir una pauta. Marca el lugar en el plano y listo.", col:"#E8590C"}
 ];
 function vTutorial(){
+  pantallaCompleta(true);
   let i=0;
   const pintar=()=>{
     const t=TUTORIAL[i], ult=i===TUTORIAL.length-1;
@@ -984,6 +1006,7 @@ function vReportar(preTipo,preZona){
 }
 
 /* --- Vista Empresa --- */
+const SEED_ATENDIDAS={"No había EPP disponible":Date.now()-6*DAY};
 const MAPA_BARRERA={"El pasillo verde estaba bloqueado":"Pasillo verde bloqueado por estibas","La ruta verde es muy larga":"La ruta verde al muelle es muy larga","No había candado o tarjeta":"No había candado o tarjeta disponible"};
 let REMOTO=null, remotoEstado="nada", FUENTE="sim";
 function cargarRemoto(cb){
@@ -1004,7 +1027,7 @@ function datosTablero(fuente){
     SEED.barreras.forEach(([b,n])=>barr[b]=n); misRep.filter(e=>e.barrera).forEach(e=>{ const k=MAPA_BARRERA[e.barrera]||e.barrera; barr[k]=(barr[k]||0)+1 });
     qr={...SEED.qr}; S.events.filter(e=>e.type==="qr").forEach(e=>qr[e.zona]=(qr[e.zona]||0)+1);
     nota=`Datos simulados de un piloto de 4 semanas${mias?` + tus ${mias} respuestas`:""}${misRep.length?` y ${misRep.length} reporte${misRep.length>1?"s":""}`:""}.`;
-    return {A,puntos,barr,qr,nota,part:null,vivo:false};
+    return {A,puntos,barr,qr,nota,part:null,vivo:false,aten:{...SEED_ATENDIDAS,...S.atendidas}};
   }
   const R=REMOTO||{resp:{},qr:{},barreras:{},puntos:[],eventos:0};
   for(const t of ["dia","noche"]) for(const p of PAUTAS_BODEGA){ const c=(R.resp[t]||{})[p]; A[t][p]=c?{n:c.n,ok:c.ok,cw:c.cw}:{n:0,ok:0,cw:0} }
@@ -1013,7 +1036,8 @@ function datosTablero(fuente){
   qr={...(R.qr||{})};
   const h=R.actualizado?new Date(R.actualizado):null;
   nota=`En vivo desde Google Sheets · ${R.eventos||0} registros${h?` · actualizado ${h.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})}`:""}`;
-  return {A,puntos,barr,qr,nota,part:null,vivo:true};
+  const aten={...(R.atendidas||{})}; Object.entries(S.atendidas).forEach(([k,v])=>{ if(v) aten[k]=v; else delete aten[k] });
+  return {A,puntos,barr,qr,nota,part:null,vivo:true,aten};
 }
 function vTablero(filtro="todos"){
   if(FUENTE==="vivo" && remotoEstado!=="ok"){
@@ -1042,6 +1066,7 @@ function vTablero(filtro="todos"){
   const ch=peor?(CHARLAS[peor.p]||{caso:DATO[peor.p]||"",preg:"¿Qué situación de esta semana tuvo que ver con esta pauta?",cierre:CORTO[peor.p]+"."}):null;
   const part=D.vivo?null:(filtro==="todos"?Math.round((SEED.participacion.dia+SEED.participacion.noche)/2):SEED.participacion[filtro]);
   const nBarr=Object.values(D.barr).reduce((a,b)=>a+b,0);
+  const tiposB=Object.keys(D.barr), tiposAt=tiposB.filter(b=>D.aten[b]).length;
   shell(`<section>
     <a class="back" href="#inicio">${I.left} Inicio</a>
     <p class="eyebrow">Vista Empresa · Bodega</p>
@@ -1053,7 +1078,7 @@ function vTablero(filtro="todos"){
       <div class="kpi"><div class="v">${global===null?"—":global+"%"}</div><div class="l">Respuestas correctas</div>${global===null?"":`<div class="d" style="color:${global>=55?"var(--okc)":"var(--badc)"}">${global>=55?"▲":"▼"} ${Math.abs(global-55)} pts vs. 55% de línea base</div>`}</div>
       <div class="kpi"><div class="v">${part===null?totN:part+"%"}</div><div class="l">${part===null?"Respuestas registradas":"Participación semanal en el reto"}</div></div>
       <div class="kpi"><div class="v">${D.puntos.filter(p=>p.k==="casi").length}</div><div class="l">Reportes en el mapa</div></div>
-      <div class="kpi"><div class="v">${nBarr}</div><div class="l">Barreras para cumplir pautas</div></div>
+      <div class="kpi"><div class="v">${nBarr}</div><div class="l">Barreras para cumplir pautas</div>${tiposB.length?`<div class="d" style="color:${tiposAt?"var(--okc)":"var(--ink-3)"}">${tiposAt} de ${tiposB.length} tipos atendidos</div>`:""}</div>
     </div>
   </section>
   ${alertas.length?`<section style="padding-top:0"><div class="alert">${I.alert}<div><b>Alerta: turno ${alertas[0].t==="noche"?"noche":"día"} en ${alertas[0].p}</b><p class="small mt8">${CORTO[alertas[0].p]}: ${alertas[0].pc}% de respuestas correctas (umbral 60%). El ${alertas[0].cw}% respondió mal estando muy seguro.${D.vivo?" El líder del turno recibe esta alerta por correo automáticamente.":""}</p></div></div></section>`:""}
@@ -1072,8 +1097,10 @@ function vTablero(filtro="todos"){
   </div></section>
   <section style="padding-top:0"><div class="card">
     <h3>¿Por qué no se cumplen las pautas?</h3>
-    ${nBarr?`<table class="tbl mt8">${Object.entries(D.barr).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<tr><td>${esc(b)}</td><td>${n}</td></tr>`).join("")}</table>`:`<p class="muted mt8">Sin barreras reportadas todavía.</p>`}
-    <p class="small muted mt12">Estas barreras no se resuelven con capacitación sino ajustando el espacio o los recursos.</p>
+    ${nBarr?`<div class="mt8">${Object.entries(D.barr).sort((a,b)=>(!!D.aten[a[0]]-!!D.aten[b[0]])||b[1]-a[1]).map(([b,n])=>{ const at=D.aten[b];
+      return `<div class="barr${at?" at":""}"><div class="bt"><b>${esc(b)}</b><small>${n} reporte${n>1?"s":""}${at?` · atendida el ${new Date(at).toLocaleDateString("es-CO",{day:"numeric",month:"short"})}`:" · pendiente"}</small></div>
+        <button class="bbtn${at?" on":""}" data-bar="${esc(b)}">${at?I.check.replace('<svg','<svg width="16" height="16"')+" Atendida":"Marcar atendida"}</button></div>` }).join("")}</div>`:`<p class="muted mt8">Sin barreras reportadas todavía.</p>`}
+    <p class="small muted mt12">Estas barreras no se resuelven con capacitación sino ajustando el espacio o los recursos. El líder marca cada una cuando la resuelve; así se mide el % de barreras atendidas.</p>
   </div></section>
   <section style="padding-top:0"><div class="card">
     <h3>Consultas por QR de zona</h3>
@@ -1094,6 +1121,12 @@ function vTablero(filtro="todos"){
   app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>vTablero(b.dataset.f));
   app.querySelectorAll("[data-src]").forEach(b=>b.onclick=()=>{ FUENTE=b.dataset.src; if(FUENTE==="vivo") remotoEstado="nada"; vTablero(filtro) });
   const rf=$("#refr"); if(rf) rf.onclick=()=>{ remotoEstado="nada"; vTablero(filtro) };
+  app.querySelectorAll("[data-bar]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.bar, ya=!!D.aten[k];
+    if(ya){ S.atendidas[k]=0; logEvent({type:"barrera_reabierta",barrera:k}); toast("Barrera reabierta") }
+    else { S.atendidas[k]=Date.now(); logEvent({type:"barrera_atendida",barrera:k}); toast("Barrera marcada como atendida") }
+    save(); const sy=scrollY; vTablero(filtro); scrollTo(0,sy);
+  });
 }
 
 function vAcerca(){
@@ -1102,7 +1135,7 @@ function vAcerca(){
     <a class="back" href="#inicio">${I.left} Inicio</a>
     <h1>Qué funciona y qué está simulado</h1>
     <h3 class="mt24">Funciona de verdad</h3>
-    <div class="dos mt8">${li(["Fichas de zona con audio (síntesis de voz del celular).","Reto diario con pregunta de confianza y repetición espaciada (lo que fallas vuelve mañana; lo que aciertas vuelve en 3, 7 y 14 días).","Simulador con 3 escenarios y retroalimentación basada en las pautas.","Consulta “¿Qué hago si…?” sin IA en vivo: solo texto de las pautas.","Reporte en 3 toques con ubicación en el plano; aparece en el mapa de calor.","Cada respuesta, reporte y escaneo se guarda en Google Sheets (sin nombres), y la pestaña “En vivo” de la Vista Empresa los muestra.","Automatización con Apps Script: alerta por correo al líder del turno cuando un tema baja del 60%, con la charla de 5 minutos, y resumen semanal.","Sin señal, la app abre igual y guarda tus respuestas; se envían cuando vuelve la conexión.","Modo oscuro automático en el turno noche, tutorial de 3 pantallas y audio en fichas y preguntas."])}</div>
+    <div class="dos mt8">${li(["Fichas de zona con audio (síntesis de voz del celular).","Reto diario con pregunta de confianza y repetición espaciada (lo que fallas vuelve mañana; lo que aciertas vuelve en 3, 7 y 14 días).","Simulador con 3 escenarios y retroalimentación basada en las pautas.","Consulta “¿Qué hago si…?” sin IA en vivo: solo texto de las pautas.","Reporte en 3 toques con ubicación en el plano; aparece en el mapa de calor.","Cada respuesta, reporte y escaneo se guarda en Google Sheets (sin nombres), y la pestaña “En vivo” de la Vista Empresa los muestra.","Automatización con Apps Script: alerta por correo al líder del turno cuando un tema baja del 60%, con la charla de 5 minutos, y resumen semanal.","Sin señal, la app abre igual y guarda tus respuestas; se envían cuando vuelve la conexión.","Modo oscuro automático en el turno noche, tutorial de 3 pantallas y audio en fichas y preguntas.","El líder marca cada barrera como atendida; queda registrado y se mide el % de barreras resueltas."])}</div>
     <h3 class="mt24">Simulado</h3>
     <div class="dos mt8">${[ "La pestaña “Piloto simulado” usa datos ficticios de 4 semanas para mostrar cómo se vería con toda la bodega usándola.","El plano de la bodega es ilustrativo.","El QR se simula tocando la zona; los afiches con QR reales se imprimen aparte.","El botón Reportar no reemplaza el canal oficial (líder inmediato o línea interna de seguridad).","El envío del reto a cada colaborador (por ejemplo, por WhatsApp) no está implementado: hoy el resumen y las alertas llegan por correo a los líderes."].map(t=>`<div class="dont" style="background:var(--yellow-l);font-weight:500">${t}</div>`).join("")}</div>
     <h3 class="mt24">Fuente de las pautas</h3>
